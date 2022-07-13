@@ -12,8 +12,8 @@ router.get("/", (req, res) => {
 });
 
 //GET DATA VIDEOS BY ID
-router.get("/:videoId", async (req, res) => {
-  const video = await Video.findById(req.params.videoId);
+router.get("/:id", async (req, res) => {
+  const video = await Video.findById(req.params.id);
   if(!video) res.status(404).send("Video not found")
   res.send(video)
 });

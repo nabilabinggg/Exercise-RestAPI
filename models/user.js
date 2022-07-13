@@ -1,45 +1,57 @@
-const mongoose = require('mongoose')
-const yup = require('yup');
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
-const userSchema = mongoose.Schema({
-    nama : {
-        type: String,
-        required: true,
-        max: 255
-    },
-    email : {
-        type: String,
-        required : true,
-        max: 100
-    },
-    password : {
-        type: String,
-        required : true,
-        min: 6,
-        max: 1024
-    },
-    createdAt : {
-        type : Date,
-        default: Date.now
-    }
-})
+const userSchema = new mongoose.Schema({
+  fullname: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  avatar: String,
+  tokens: [{ type: Object }],
+});
 
-const validateUser = user => {
-    const schema = yup.object().shape({
-        nama: yup.string().required().max(255),
-        email: yup.string().email().required().max(100),
-        password: yup.string().required().min(6).max(1024),
-    })
-    return schema
-    .validate(user)
-    .then((user) => user)
-    .catch(error => {
-        return {
-            message:error.message
-        }
-    })
-}
+userSchema.pre("save", function (next) {
+  if (this.isModified("password")) {
+    bcrypt.hash(this.password, 8, (err, hash) => {
+      if (err) return next(err);
 
+      this.password = hash;
+      next();
+    });
+  }
+});
 
-exports.User = new mongoose.model('User', userSchema);
-exports.validateUser = validateUser;
+userSchema.methods.comparePassword = async function (password) {
+  if (!password) throw new Error("Password is mission, can not compare!");
+
+  try {
+    const result = await bcrypt.compare(password, this.password);
+    return result;
+  } catch (error) {
+    console.log("Error while comparing password!", error.message);
+  }
+};
+
+userSchema.statics.isThisEmailInUse = async function (email) {
+  if (!email) throw new Error("Invalid Email");
+  try {
+    const user = await this.findOne({ email });
+    if (user) return false;
+
+    return true;
+  } catch (error) {
+    console.log("error inside isThisEmailInUse method", error.message);
+    return false;
+  }
+};
+
+module.exports = mongoose.model("User", userSchema);
