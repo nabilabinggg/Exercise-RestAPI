@@ -2,16 +2,17 @@ const express = require("express");
 const mongoose = require("mongoose");
 const winston = require("winston");
 const app = express();
-require("dotenv").config();
 require('./models/db');
 const videoRoute = require("./routes/video");
-const userRoute = require("./routes/user");
 
 const PORT = process.env.PORT || 3000;
 
 //middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+//routes
+app.use("/api/videos", videoRoute);
 
 // create a logger
 const logger = winston.createLogger({
@@ -26,9 +27,6 @@ const logger = winston.createLogger({
   ],
 });
 
-//routes
-app.use("/api/videos", videoRoute);
-app.use("/api/user", userRoute);
 
 
 //start server
