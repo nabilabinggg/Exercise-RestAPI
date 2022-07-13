@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const winston = require("winston");
 const app = express();
 require("dotenv").config();
+require('./models/db');
 const videoRoute = require("./routes/video");
 const userRoute = require("./routes/user");
 
@@ -29,19 +30,6 @@ const logger = winston.createLogger({
 app.use("/api/videos", videoRoute);
 app.use("/api/user", userRoute);
 
-//connect to mongodb atlas
-mongoose
-  .connect(process.env.MONGO_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-  }) //beda
-  .then(() => {
-    logger.info("Connected to MongoDB Atlas");
-  })
-  .catch((error) => {
-    logger.error("error", error.message);
-  });
 
 //start server
 app.listen(PORT, () => {
