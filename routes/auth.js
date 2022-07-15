@@ -47,11 +47,11 @@ router.post('/register', async (req,res) => {
 
 // login
 router.post('/login', async (req,res) => {
-    // if email exist
-    const user = await User.findOne({email: req.body.email})
+    // if username exist
+    const user = await User.findOne({username: req.body.username})
     if(!user) return res.status(400).json({
         status: res.statusCode,
-        message: 'Email anda salah !'
+        message: 'Username anda salah !'
     })
 
     // check password
