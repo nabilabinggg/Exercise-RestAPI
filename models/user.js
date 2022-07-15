@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const yup = require('yup');
 
 const userSchema = mongoose.Schema({
-    nama : {
+    username : {
         type: String,
         required: true,
         max: 255
@@ -26,7 +26,7 @@ const userSchema = mongoose.Schema({
 
 const validateUser = user => {
     const schema = yup.object().shape({
-        nama: yup.string().required().max(255),
+        username: yup.string().required().max(255),
         email: yup.string().email().required().max(100),
         password: yup.string().required().min(6).max(1024),
     })

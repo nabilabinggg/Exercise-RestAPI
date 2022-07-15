@@ -29,7 +29,7 @@ router.post('/register', async (req,res) => {
     if (error.message) res.status(400).send(error.message);
 
     user = new User({
-        nama: req.body.nama,
+        username: req.body.username,
         email: req.body.email,
         password: hashPassword
     })
